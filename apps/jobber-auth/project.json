@@ -38,6 +38,25 @@
       "options": {
         "passWithNoTests": true
       }
+    },
+    "generate-types": {
+      "command": "prisma generate",
+      "options": {
+        "cwd": "apps/jobber-auth"
+      }
+    },
+    "migrate-prisma": {
+      "command": "prisma migrate dev",
+      "options": {
+        "cwd": "apps/jobber-auth"
+      }
+    },
+    "prisma-studio": {
+      "command": "prisma studio",
+      "options": {
+        "cwd": "apps/jobber-auth"
+      }
     }
+
   }
 }
