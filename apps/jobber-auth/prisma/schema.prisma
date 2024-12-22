@@ -1,0 +1,80 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma-clients/jobber-auth"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("AUTH_DATABASE_URL")
+}
+
+model User {
+    id        String       @id @default(cuid())
+    email     String       @unique
+    name      String
+    roles     UserRole[]
+    friends   Friendship[] @relation("UserAsFriend")
+    friendOf  Friendship[] @relation("FriendAsUser")
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
+}
+
+model Role {
+    id          String           @id @default(cuid())
+    name        String           @unique
+    permissions RolePermission[]
+    users       UserRole[]
+    createdAt   DateTime         @default(now())
+    updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+    id        String           @id @default(cuid())
+    name      String           @unique
+    roles     RolePermission[]
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+}
+
+model UserRole {
+    id     String @id @default(cuid())
+    userId String
+    roleId String
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, roleId]) // Ensure a user cannot have the same role twice
+}
+
+model RolePermission {
+    id           String @id @default(cuid())
+    roleId       String
+    permissionId String
+
+    role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([roleId, permissionId]) // Ensure a role cannot have the same permission twice
+}
+
+model Friendship {
+    id       String @id @default(cuid())
+    userId   String
+    friendId String
+
+    user   User @relation("UserAsFriend", fields: [userId], references: [id], onDelete: Cascade)
+    friend User @relation("FriendAsUser", fields: [friendId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, friendId]) // Prevent duplicate friendships
+    @@index([friendId]) // Allow querying by friendId
+}
