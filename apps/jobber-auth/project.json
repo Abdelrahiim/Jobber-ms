@@ -36,6 +36,7 @@
       }
     },
     "test": {
+      "dependsOn": ["generate-types", "migrate-prisma"],
       "options": {
         "passWithNoTests": true
       }
