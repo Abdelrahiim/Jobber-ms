@@ -14,8 +14,4 @@ export class User extends AbstractModel {
 
   @Field(() => String)
   lastName: string;
-
-
-  @Field()
-  createdAt: Date;
 }
